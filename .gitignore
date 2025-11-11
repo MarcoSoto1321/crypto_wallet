@@ -1,0 +1,15 @@
+# Ignorar la carpeta del entorno virtual de Python
+/venv/
+
+# Ignorar archivos del IDE (ej. VSCode)
+/.vscode/
+
+# Ignorar archivos .pyc compilados
+__pycache__/
+*.pyc
+
+# Ignorar archivos de almacén de claves (¡MUY IMPORTANTE!)
+*.keystore.json
+
+# Opcional: Ignorar archivos .env que guardan secretos
+.env
