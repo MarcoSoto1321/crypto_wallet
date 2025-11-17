@@ -57,7 +57,7 @@ def create_keystore(passphrase: str) -> Dict[str, Any]:
 
     return keystore
 
-def save_keystore(keystore: Dict[str, Any], filepath: Path | srt) -> None:
+def save_keystore(keystore: Dict[str, Any], filepath: Path | str) -> None:
     '''
     Guarda el keystore en un archivo JSON en UTF-8
     '''
