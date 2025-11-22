@@ -8,7 +8,7 @@ from typing import Any, Dict, Tuple
 from cryptography.exceptions import InvalidTag
 
 # Constantes tomadas de crypto_utils
-from crypto_utils import (
+from .crypto_utils import (
     generate_ed25519_keys, derive_aes_key, encrypt_data, decrypt_data, derive_address_btc_style,
     ARGON_TIME_COST, ARGON_MEM_COST_KIB, ARGON_PARALLELISM, ARGON_SALT_LEN_BYTES
 )
@@ -42,7 +42,7 @@ def create_keystore(passphrase: str) -> Dict[str, Any]:
         "kdf_params": {
             #Todo lo base 64 se decodifica primero a utf-8 para evitar caracteres raros,
             # aunque se podría limpiar en otro lado
-            "salt_b64":base64.b64encode(salt.decode("utf-8")),
+            "salt_b64":base64.b64encode(salt).decode("utf-8"),
             "t_cost":ARGON_TIME_COST,
             "m_cost":ARGON_MEM_COST_KIB,
             "parallelism":ARGON_PARALLELISM
@@ -95,7 +95,7 @@ def unlock_keystore(keystore: Dict[str, Any], passphrase: str) -> Tuple[bytes, b
     ciphertext = base64.b64decode(keystore.get("ciphertext_b64"))
     
     #Tag
-    tag = base64.decode(keystore.get("tag_b64"))
+    tag = base64.b64decode(keystore.get("tag_b64"))
 
     # Llave pública
     public_key_bytes = base64.b64decode(keystore.get("pubkey_b64"))
