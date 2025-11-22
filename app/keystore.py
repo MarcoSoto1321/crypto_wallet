@@ -37,7 +37,6 @@ def create_keystore(passphrase: str) -> Dict[str, Any]:
 
     # Contrucción del diccionario para el Keystore
     keystore: Dict[str, Any]= {
-        #Se podría poner variables en los strings para dinamismo, pero se desfinnieron así para no complicarnos
         "kdf": "Argon2id",
         "kdf_params": {
             "salt_b64":base64.b64encode(salt.decode("utf-8")),
