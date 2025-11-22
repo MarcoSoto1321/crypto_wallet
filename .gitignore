@@ -11,5 +11,8 @@ __pycache__/
 # Ignorar archivos de almacén de claves (¡MUY IMPORTANTE!)
 *.keystore.json
 
+# Ignorar caché de pytest
+.pytest_cache/
+
 # Opcional: Ignorar archivos .env que guardan secretos
 .env
