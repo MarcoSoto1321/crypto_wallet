@@ -2,6 +2,7 @@ import time
 import os
 import json
 import base64
+import hashlib
 from pathlib import Path
 from typing import Any, Dict, Tuple
 
@@ -54,10 +55,31 @@ def create_keystore(passphrase: str) -> Dict[str, Any]:
         "pubkey_b64": base64.b64encode(public_key_bytes).decode("utf-8"),
         "created": time.time(),
         "scheme": "Ed25519",
-        "address": address
+        "address": address,
+        "checksum": ""  # Se añade después de armar el keystore
     }
 
+    # Checksum
+    keystore["checksum"] = keystore_checksum(keystore)
+
     return keystore
+
+def keystore_checksum(keystore: Dict[str, Any]) -> str:
+    '''
+    Saca el hash del keystore con SHA-256
+    - Sin incluir el propio checksum
+    '''
+    # Copia del keystore para no cambiar el original porque se elimina el campo checksum
+    tmp_keystore = keystore.copy()
+    tmp_keystore.pop("checksum", None)
+    
+    # JSON canónico
+    canon_json = json.dumps(tmp_keystore, sort_keys=True, separators=(",", ":"))
+    canon_bytes = canon_json.encode("utf-8")
+
+    checksum = hashlib.sha256(canon_bytes).hexdigest()
+
+    return checksum
 
 def save_keystore(keystore: Dict[str, Any], filepath: Path | str) -> None:
     '''
@@ -70,11 +92,21 @@ def save_keystore(keystore: Dict[str, Any], filepath: Path | str) -> None:
 
 def load_keystore(filepath: Path | str) -> Dict[str, Any]:
     '''
-    Carga un keysotre desde un JSON en UTF-8
+    Carga un keystore desde un JSON en UTF-8
+    - Comprueba el checksum del keystore
     '''
     path = Path(filepath)
     keystore_json = path.read_text(encoding='utf-8')
-    return json.loads(keystore_json)
+
+    # No se me ocurrió otra forma de diferenciar el checksum calculado del obtenido en el json
+    kystr = json.loads(keystore_json)
+    kystr_chksm = kystr.get("checksum")
+    
+    calc_chksm = keystore_checksum(kystr)
+    if kystr_chksm != calc_chksm:
+        raise ValueError("Checksum incorrecto, posible corrupción o modificación del keystore")
+
+    return kystr
 
 def unlock_keystore(keystore: Dict[str, Any], passphrase: str) -> Tuple[bytes, bytes, str]:
     '''
