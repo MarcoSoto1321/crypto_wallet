@@ -7,12 +7,11 @@ def canonical_json(data: Dict[str, Any]) -> str:
     """
     JSON canónico:
     - Llaves ordenadas lexicográficamente.
-    - Sin espacios extra.
     """
     return json.dumps(
         data,
         sort_keys=True,
-        separators=(",", ":"),
+        separators=(",", ":"), 'Validación de formato en donde se verifica comas y dos puntos.
         ensure_ascii=False,
     )
 
