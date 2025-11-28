@@ -23,7 +23,35 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from .canonicalizer import canonical_bytes
 from .keystore import load_keystore, unlock_keystore
+# ============================================================
+# VALIDACIÓN DE TRANSACCIONES
+# ============================================================
+def validate_tx(tx: Dict[str, Any]) -> None:
+    """
+    Valida que la transacción tenga los campos necesarios y en formato correcto.
+    Lanza excepciones explícitas para facilitar depuración y verificación.
+    """
+    required = ["to", "value", "nonce", "timestamp"]
 
+    # Validar presencia de campos obligatorios
+    for field in required:
+        if field not in tx:
+            raise ValueError(f"Falta el campo obligatorio '{field}' en la transacción.")
+        if tx[field] is None or tx[field] == "":
+            raise ValueError(f"El campo '{field}' no puede estar vacío.")
+
+    # Validar dirección destino
+    if not isinstance(tx["to"], str):
+        raise TypeError("El campo 'to' debe ser una cadena (dirección).")
+
+    # Validar 'value'
+    value = tx["value"]
+    if isinstance(value, int):
+        pass
+    elif isinstance(value, str) and value.isdigit():
+        pass
+    else:
+        raise ValueError("El campo 'value' debe ser un entero o un string numérico.")
 
 # ------------------------------------------------------------
 # Validación básica de la transacción
