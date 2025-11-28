@@ -1,6 +1,6 @@
 # app/signer.py
 import base64
-import datetime
+import datetime   
 from typing import Dict, Any
 
 from cryptography.hazmat.primitives.asymmetric import ed25519
@@ -18,7 +18,6 @@ def validate_tx(tx: Dict[str, Any]) -> None:
     """
     required = ["to", "value", "nonce", "timestamp"]
 
-    # Validar presencia de campos obligatorios
     for field in required:
         if field not in tx:
             raise ValueError(f"Falta el campo obligatorio '{field}' en la transacción.")
@@ -53,7 +52,7 @@ def sign_transaction(
     }
     """
 
-    # Validar transacción antes de firmar
+    # Validamos estructura mínima de la transacción
     validate_tx(tx)
 
     # Cargar keystore y recuperar llaves
@@ -64,7 +63,7 @@ def sign_transaction(
     if not tx.get("from"):
         tx["from"] = address
 
-    # Crear bytes canónicos del mensaje
+    # Obtener mensaje canónico
     message = canonical_bytes(tx)
 
     # Firmar usando Ed25519

@@ -10,9 +10,9 @@ def canonical_json(data: Dict[str, Any]) -> str:
     """
     return json.dumps(
         data,
-        sort_keys=True,
-        separators=(",", ":"), 'Validación de formato en donde se verifica comas y dos puntos.
-        ensure_ascii=False,
+        sort_keys=True,        # Orden lexicográfico de llaves
+        separators=(",", ":"), # JSON compacto y determinístico
+        ensure_ascii=False,    # Mantiene UTF-8 intacto
     )
 
 
