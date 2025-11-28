@@ -1,6 +1,6 @@
 # app/signer.py
 import base64
-import datetime
+import datetime   
 from typing import Dict, Any
 
 from cryptography.hazmat.primitives.asymmetric import ed25519
@@ -16,15 +16,11 @@ def validate_tx(tx: Dict[str, Any]) -> None:
     Valida que la transacción tenga los campos necesarios y en formato correcto.
     Lanza excepciones explícitas para facilitar depuración y verificación.
     """
-
     required = ["to", "value", "nonce", "timestamp"]
 
-    # Validar presencia de campos obligatorios
     for field in required:
         if field not in tx:
             raise ValueError(f"Falta el campo obligatorio '{field}' en la transacción.")
-        if tx[field] is None or tx[field] == "":
-            raise ValueError(f"El campo '{field}' no puede estar vacío.")   # NUEVO
 
     # Validar dirección destino
     if not isinstance(tx["to"], str):
@@ -56,6 +52,9 @@ def validate_tx(tx: Dict[str, Any]) -> None:
 # FUNCIÓN PRINCIPAL: FIRMAR TRANSACCIÓN
 # ============================================================
 
+# ============================================================
+# FUNCIÓN PRINCIPAL: FIRMAR TRANSACCIÓN
+# ============================================================
 def sign_transaction(
     keystore_path: str,
     passphrase: str,
