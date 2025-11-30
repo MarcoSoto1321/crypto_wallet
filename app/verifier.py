@@ -9,6 +9,7 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 from .canonicalizer import canonical_bytes
 from .crypto_utils import derive_address_btc_style
 
+# Archivo donde se guarda el último nonce por address
 NONCE_STATE_PATH = Path("nonce_state.json")
 
 
@@ -28,6 +29,14 @@ def verify_signed_tx(
     nonce_state_path: str | None = None,
     enforce_nonce: bool = True,
 ) -> Dict[str, Any]:
+    """
+    Verifica:
+    - Firma Ed25519
+    - Que la dirección derive de la pubkey y coincida con tx["from"]
+    - Que el nonce sea mayor al último visto (si enforce_nonce=True)
+
+    Regresa: {"valid": bool, "reason": str}
+    """
     try:
         tx = signed_tx["tx"]
         signature_b64 = signed_tx["signature_b64"]
@@ -40,10 +49,12 @@ def verify_signed_tx(
         signature = base64.b64decode(signature_b64)
         pub_bytes = base64.b64decode(pubkey_b64)
 
+        # 1) Verificar firma
         public_key = ed25519.Ed25519PublicKey.from_public_bytes(pub_bytes)
         message = canonical_bytes(tx)
         public_key.verify(signature, message)
 
+        # 2) Verificar que la address derive de la pubkey
         derived_address = derive_address_btc_style(pub_bytes)
         tx_from = tx.get("from")
         if not tx_from:
@@ -52,6 +63,7 @@ def verify_signed_tx(
         if derived_address.lower() != str(tx_from).lower():
             return {"valid": False, "reason": "address mismatch"}
 
+        # 3) Protección contra replay vía nonce
         if enforce_nonce:
             path_obj = NONCE_STATE_PATH if nonce_state_path is None else Path(nonce_state_path)
             nonce_state = _load_nonce_state(path_obj)
