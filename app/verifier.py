@@ -31,8 +31,8 @@ def verify_signed_tx(
 ) -> Dict[str, Any]:
     """
     Verifica:
-    - Firma Ed25519
     - Que la dirección derive de la pubkey y coincida con tx["from"]
+    - Firma Ed25519
     - Que el nonce sea mayor al último visto (si enforce_nonce=True)
 
     Regresa: {"valid": bool, "reason": str}
@@ -49,19 +49,21 @@ def verify_signed_tx(
         signature = base64.b64decode(signature_b64)
         pub_bytes = base64.b64decode(pubkey_b64)
 
-        # 1) Verificar firma
-        public_key = ed25519.Ed25519PublicKey.from_public_bytes(pub_bytes)
-        message = canonical_bytes(tx)
-        public_key.verify(signature, message)
-
-        # 2) Verificar que la address derive de la pubkey
+        # 1) Verificar que la address derive de la pubkey 
         derived_address = derive_address_btc_style(pub_bytes)
         tx_from = tx.get("from")
         if not tx_from:
             return {"valid": False, "reason": "tx.from missing"}
 
+        # Esto atrapa el error "address mismatch" antes de que falle la firma
         if derived_address.lower() != str(tx_from).lower():
             return {"valid": False, "reason": "address mismatch"}
+
+        # 2) Verificar firma
+        public_key = ed25519.Ed25519PublicKey.from_public_bytes(pub_bytes)
+        message = canonical_bytes(tx)
+        # Si la firma no es válida, esto lanza una excepción
+        public_key.verify(signature, message)
 
         # 3) Protección contra replay vía nonce
         if enforce_nonce:
@@ -79,4 +81,5 @@ def verify_signed_tx(
         return {"valid": True, "reason": "ok"}
 
     except Exception as e:
+        # Captura errores de firma (cryptography raise exceptions)
         return {"valid": False, "reason": f"exception: {e}"}
