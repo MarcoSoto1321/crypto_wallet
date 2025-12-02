@@ -18,6 +18,7 @@ El flujo general es:
 import base64
 import datetime
 from typing import Dict, Any
+import re
 
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
@@ -77,8 +78,14 @@ def validate_tx(tx: Dict[str, Any]) -> None:
 
     # 'value' puede ser entero o string numérico
     value = tx["value"]
-    if not (isinstance(value, int) or (isinstance(value, str) and value.isdigit())):
-        raise ValueError("El campo 'value' debe ser un entero o string numérico.")
+    if isinstance(value, int):
+        pass
+    elif isinstance(value, str):
+        # Permite enteros o decimales (ej. "10", "10.5", "0.001")
+        if not re.match(r'^\d+(\.\d+)?$', value):
+            raise ValueError("El campo 'value' debe ser un número entero o decimal positivo.")
+    else:
+        raise ValueError("El campo 'value' debe ser un entero o un string numérico.")
 
     # 'nonce' debe ser entero y no negativo
     if not isinstance(tx["nonce"], int):
