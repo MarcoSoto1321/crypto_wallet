@@ -16,3 +16,9 @@ __pycache__/
 
 # Opcional: Ignorar archivos .env que guardan secretos
 .env
+
+# Ignorar archivos de logs
+*.log
+
+#outbox
+/outbox/
