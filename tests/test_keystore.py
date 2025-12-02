@@ -6,7 +6,6 @@ from cryptography.exceptions import InvalidTag
 from pathlib import Path
 from app.keystore import create_keystore, save_keystore, load_keystore, unlock_keystore
 
-# Esto añade la carpeta raíz del proyecto al path para que pytest pueda encontrar /app
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
