@@ -31,7 +31,8 @@ def ensure_dirs() -> None:
 def cmd_init(args: argparse.Namespace) -> None:
     '''
     Inicialización de la billetera.
-    Valida P
+    Crea nuevo keystone cifrado
+    Valida contraseña
     '''
     # Creación de directorios necesarios
     ensure_dirs()
@@ -131,11 +132,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_init = sub.add_parser("init", help="Crear un nuevo keystore cifrado")
     p_init.set_defaults(func=cmd_init)
 
-    # Llama a la función "cmd_init()" con el comando "init"
+    # Llama a la función "cmd_address()" con el comando "address"
     p_addr = sub.add_parser("address", help="Mostrar la dirección de la billetera")
     p_addr.set_defaults(func=cmd_address)
 
-    # Llama a la función "cmd_init()" con el comando "init" y le agrega los argumentos validos
+    # Llama a la función "cmd_sign()" con el comando "sign" y le agrega los argumentos validos
     p_sign = sub.add_parser("sign", help="Firmar una nueva transacción (outbox/)")
     p_sign.add_argument("--to", required=True, help="Dirección destino")
     p_sign.add_argument("--value", required=True, help="Cantidad a transferir")
@@ -144,7 +145,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_sign.add_argument("--data_hex", default=None, help="Payload hex opcional (0x...)")
     p_sign.set_defaults(func=cmd_sign)
 
-    # Llama a la función "cmd_init()" con el comando "init" y le agrega su argumento necesario
+    # Llama a la función "cmd_recv()" con el comando "recv" y le agrega su argumento necesario
     p_recv = sub.add_parser("recv", help="Verificar transacción firmada desde un archivo")
     p_recv.add_argument("--path", required=True, help="Ruta al JSON de transacción firmada")
     p_recv.set_defaults(func=cmd_recv)
