@@ -10,17 +10,24 @@ from .canonicalizer import canonical_bytes
 from .crypto_utils import derive_address_btc_style
 
 # Archivo donde se guarda el último nonce por address
+# Evitar ataques de replay
 NONCE_STATE_PATH = Path("nonce_state.json")
 
-
 def _load_nonce_state(path: Path = NONCE_STATE_PATH) -> Dict[str, int]:
+    '''
+    Cragar estado del nonce
+    Verifica si existe archivo con nonce.
+    '''
     if not path.exists():
         return {}
     data = json.loads(path.read_text(encoding="utf-8"))
+    # Convierte el nonce a int
     return {addr: int(nonce) for addr, nonce in data.items()}
 
-
 def _save_nonce_state(state: Dict[str, int], path: Path = NONCE_STATE_PATH) -> None:
+    '''
+    Guarda el diccionario de nonces actualizado
+    '''
     path.write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
@@ -38,18 +45,22 @@ def verify_signed_tx(
     Regresa: {"valid": bool, "reason": str}
     """
     try:
+        # Extraemos componentes
         tx = signed_tx["tx"]
         signature_b64 = signed_tx["signature_b64"]
         pubkey_b64 = signed_tx["pubkey_b64"]
         sig_scheme = signed_tx.get("sig_scheme", "Ed25519")
 
+        # Validamos esquema de firma
         if sig_scheme != "Ed25519":
             return {"valid": False, "reason": f"Unsupported sig_scheme {sig_scheme}"}
 
+        # Decodificamos y pasamos de base 64 a bytes porque Json no almacena bytes
         signature = base64.b64decode(signature_b64)
         pub_bytes = base64.b64decode(pubkey_b64)
 
-        # 1) Verificar que la address derive de la pubkey 
+        # 1) Verificar que la address derive de la pubkey
+        # Evitamos suplantación
         derived_address = derive_address_btc_style(pub_bytes)
         tx_from = tx.get("from")
         if not tx_from:
@@ -67,14 +78,17 @@ def verify_signed_tx(
 
         # 3) Protección contra replay vía nonce
         if enforce_nonce:
+            # Cargamos estado actual
             path_obj = NONCE_STATE_PATH if nonce_state_path is None else Path(nonce_state_path)
             nonce_state = _load_nonce_state(path_obj)
 
+            # Comprobamos que el nuevo nonce sea mayor que el último nonce guardado
             sender_nonce = int(tx.get("nonce", 0))
             last_nonce = int(nonce_state.get(derived_address, -1))
             if sender_nonce <= last_nonce:
                 return {"valid": False, "reason": f"stale nonce: {sender_nonce} <= {last_nonce}"}
 
+            # Guarda nuevo nonce
             nonce_state[derived_address] = sender_nonce
             _save_nonce_state(nonce_state, path_obj)
 
