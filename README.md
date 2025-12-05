@@ -28,7 +28,9 @@ Este proyecto implementa una billetera fría (offline) para un sistema basado en
 
 ## Cómo Construir y Ejecutar
 
-Este proyecto utiliza un Makefile para gestionar el entorno virtual y la ejecución automáticamente. No es necesario instalar librerías manualmente.
+Este proyecto utiliza Makefile para gestionar el entorno virtual y la ejecución automáticamente. No es necesario instalar librerías manualmente.
+
+Requiere la instalación previa de Makefile en Windows.
 
 ### 1. Instalación Automática
 
@@ -99,10 +101,12 @@ make test
 
 - **Robo de keystore:** Mitigado por cifrado AES-256-GCM y KDF Argon2id (resistente a fuerza bruta GPU).
 - **Manipulación de tx:** Mitigado por firmas Ed25519 sobre JSON canónico.
+- **Manipulación de Keystore:** Mitigado por Checksum con SHA-256.
 - **Replay Attacks:** El verificador mantiene un estado local de nonces (nonce_state.json) para rechazar transacciones antiguas.
 
 ### Limitaciones (Fuera de Alcance)
 
 - No hay conexión a red real (todo es simulación local de archivos).
 - No maneja balances (no verifica si tienes fondos, solo si la firma es válida).
-- El keystore no usa semillas mnemónicas (BIP-39) en esta versión base.
+- El keystore no usa semillas mnemónicas (BIP-39).
+- No hay medidas contra ataques de side-channel o en caso de que la máquina tenga malware
