@@ -110,3 +110,5 @@ make test
 - No maneja balances (no verifica si tienes fondos, solo si la firma es válida).
 - El keystore no usa semillas mnemónicas (BIP-39).
 - No hay medidas contra ataques de side-channel o en caso de que la máquina tenga malware
+### Conclusión
+El proyecto permitió implementar desde cero una billetera fría completa, integrando canonicalización, firmado seguro, verificación de transacciones y manejo de claves cifradas. La estructura reproducible con Makefile, junto con pruebas unitarias y vectores dorados, garantiza que el sistema sea consistente, verificable y fácilmente extensible.
