@@ -1,6 +1,6 @@
 # Proyecto 1: Billetera Fría de Criptomonedas (Crypto 2026-1)
 
-Este proyecto implementa una billetera fría (offline) para un sistema basado en cuentas, desarrollada desde cero en Python siguiendo estándares criptográficos robustos.
+El proyecto consiste en la creación de una billetera fría (offline) para un sistema de cuentas, implementada desde cero en Python y fundamentada en el uso de primitivas y procedimientos criptográficos estandarizados.
 
 ## Pila Tecnológica
 
