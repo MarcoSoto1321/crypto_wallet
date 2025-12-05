@@ -2,6 +2,9 @@
 
 El proyecto consiste en la creación de una billetera fría (offline) para un sistema de cuentas, implementada desde cero en Python y fundamentada en el uso de primitivas y procedimientos criptográficos estandarizados.
 
+## Objetivo del Proyecto
+Desarrollar una billetera fría funcional que permita generar claves, almacenar de forma segura la clave privada, firmar transacciones, verificar firmas recibidas y simular el flujo básico de envío/recepción sin depender de frameworks externos ni de una red real.
+
 ## Pila Tecnológica
 
 - **Lenguaje:** Python 3.10+
