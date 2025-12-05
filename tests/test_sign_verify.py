@@ -69,7 +69,7 @@ def test_replay_nonce_rejected(tmp_path: Path):
 
 def test_address_mismatch_detected(tmp_path: Path):
     '''
-
+    Verificamos que se detecta manipulación en el address de la transacción
     '''
     # Entorno de prueba
     ks_path = tmp_path / "wallet.keystore.json"
