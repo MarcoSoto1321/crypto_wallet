@@ -15,7 +15,9 @@ from app.canonicalizer import canonical_bytes
 
 # Crea una transacción mínima y revisa que tenga los campos obligatorios y tipos correctos
 def test_transaction_minimal():
-
+    """
+    Prueba de creación de transacción mínima y verificación de campos obligatorios
+    """
     transaction = create_transaction(
         # Lo rellena el signer
         from_address="",
@@ -42,6 +44,9 @@ def test_transaction_minimal():
 
 # Crea una transacción con gas_limit y data_hex para probar que se agregan correctamente
 def test_create_transaction_optionals():
+    """
+    Prueba de creación de transacción con campos opcionales gas_limit y data_hex
+    """
     transaction = create_transaction(
         from_address="0xabc123",
         to_address="0xdef456",
@@ -63,6 +68,9 @@ def test_create_transaction_optionals():
 
 # Si el nonce es negativo, debe lanzar ValueError al crear la transacción
 def test_transaction_invalid_nonce():
+    """
+    Prueba de creación de transacción con nonce negativo
+    """
     # Las pruebas que implementen pytest.raises aparecerán como PASSED si se lanzó la excepción que se espera (ValueError)
     with pytest.raises(ValueError, match="nonce") as err:
         create_transaction(
@@ -72,10 +80,12 @@ def test_transaction_invalid_nonce():
             value="1",
             nonce=-1
         )
-    #print (err.value)
 
 # Si gas_limit es negativo, también debe lanzar ValueError
 def test_transaction_invalid_gas():
+    """
+    Prueba de creación de transacción con gas_limit negativo
+    """
     with pytest.raises(ValueError, match="gas_limit"):
         create_transaction(
             from_address=None,
@@ -87,6 +97,9 @@ def test_transaction_invalid_gas():
 
 # Una transacción correcta
 def test_validate_transaction():
+    """
+    Prueba de validación con una transacción correcta
+    """
     transaction = create_transaction(
         from_address="0xabc123",
         to_address="0xdef456",
@@ -101,6 +114,9 @@ def test_validate_transaction():
 
 # Sin algún campo obligatorio debe lanzar ValueError
 def test_transaction_missing_field():
+    """
+    Prueba de validación de transacción con un campo obligatorio faltante
+    """
     transaction = {
         "from": "0xabc",
 
@@ -113,6 +129,9 @@ def test_transaction_missing_field():
 
 # Con tipos de datos erróneos
 def test_transaction_wrong_types():
+    """
+    Prueba de validación de transacción con tipos de datos incorrectos
+    """
     transaction = {
         "from": "0xabc",
         "to": "0xdef",
@@ -125,6 +144,9 @@ def test_transaction_wrong_types():
 
 #  transaction_to_json + json_to_transaction son inversos razonables
 def test_transaction_json():
+    """
+    Prueba de conversión de transacción a JSON y viceversa
+    """
     transaction_original = create_transaction(
         from_address="0xabc",
         to_address="0xdef",
@@ -140,6 +162,9 @@ def test_transaction_json():
 
 # Guarda una transacción en archivo y luego la carga
 def test_transaction_file(tmp_path: Path):
+    """
+    Prueba de guardado y carga de transacción desde archivo
+    """
     transaction_original = create_transaction(
         from_address="0xabc",
         to_address="0xdef",
@@ -155,9 +180,11 @@ def test_transaction_file(tmp_path: Path):
 
     assert transaction_loaded == transaction_original
 
-# Prueba el firmado de signer.py para una transacción con "from" vacío,
-# la prueba más completa hasta ahora
+# Prueba el firmado de signer.py para una transacción con "from" vacío
 def test_sign_transaction():
+    """
+    Prueba de firmado de transacción, de llenado del campo 'from' y de canonical_bytes
+    """
     with TemporaryDirectory() as tmpdir:
         tmpdir = Path(tmpdir)
 
